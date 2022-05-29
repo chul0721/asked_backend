@@ -75,7 +75,7 @@ app.post('/anwser', async (req: FastifyRequest, res) => {
   return res.send({ data: question })
 })
 
-app.listen(PORT, (err) => {
+app.listen(PORT, '0.0.0.0', (err) => {
   if (err) {
     console.log(err)
     process.exit(1)
