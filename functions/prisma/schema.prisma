@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Question {
+  id          Int         @id @default(autoincrement())
+  address     String
+  content     String
+  answer      String?
+  isAnswered  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  answeredAt  DateTime    @updatedAt()
+}
