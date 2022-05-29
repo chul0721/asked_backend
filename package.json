@@ -10,6 +10,7 @@
     "migrate": "yarn prisma migrate dev"
   },
   "dependencies": {
+    "@fastify/cors": "^7.0.0",
     "@prisma/client": "^3.14.0",
     "dotenv": "^16.0.1",
     "fastify": "^3.29.0",

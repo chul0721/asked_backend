@@ -1,10 +1,13 @@
-import fastify, { FastifyRequest } from 'fastify'
+import fastify, { FastifyInstance, FastifyRequest } from 'fastify'
+import cors from '@fastify/cors'
 import { PrismaClient } from '@prisma/client'
 import { PASSWORD, PORT } from './constant'
 import 'dotenv/config'
 
 const prisma = new PrismaClient()
-const app = fastify({ trustProxy: true })
+const app: FastifyInstance = fastify({ trustProxy: true })
+
+app.register(cors, { origin: '*' })
 
 app.get('/data', async () => {
   const questions = await prisma.question.findMany().catch((err) => {
