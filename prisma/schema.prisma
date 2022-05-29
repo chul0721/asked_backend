@@ -12,6 +12,7 @@ model Question {
   address     String
   content     String
   answer      String?
+  isAnswered  Boolean     @default(false)
   createdAt   DateTime    @default(now())
   answeredAt  DateTime    @updatedAt()
 }

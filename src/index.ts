@@ -63,7 +63,8 @@ app.post('/anwser', async (req: FastifyRequest, res) => {
         id
       },
       data: {
-        answer
+        answer,
+        isAnswered: true
       }
     })
     .catch((err) => {
