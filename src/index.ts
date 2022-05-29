@@ -71,6 +71,8 @@ app.post('/anwser', async (req: FastifyRequest, res) => {
       console.log(err)
       throw err
     })
+
+  return res.send({ data: question })
 })
 
 app.listen(PORT, (err) => {
