@@ -1,3 +1,3 @@
-import { asked } from "./src";
+import { asked } from './src'
 
-export {asked as asked}
+export { asked as asked }

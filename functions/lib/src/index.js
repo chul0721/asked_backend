@@ -1,86 +1,44 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.asked = void 0;
-const fastify_1 = require("fastify");
-const cors_1 = require("@fastify/cors");
-const client_1 = require("@prisma/client");
-const constant_1 = require("./constant");
+const koa_1 = __importDefault(require("koa"));
+const cors_1 = __importDefault(require("@koa/cors"));
 require("dotenv/config");
-const http = require("http");
-const functions = require("firebase-functions");
-const prisma = new client_1.PrismaClient();
-let handleRequest = null;
-const serverFactory = (handler, opts) => {
-    handleRequest = handler;
-    return http.createServer();
-};
-const app = (0, fastify_1.default)({ serverFactory });
-app.register(cors_1.default, { origin: '*' });
-app.get('/data', async () => {
-    const questions = await prisma.question.findMany().catch((err) => {
-        console.log(err);
-        throw err;
-    });
-    return {
-        data: questions
-    };
-});
-app.post('/regist', async (req, res) => {
-    const { content } = req.body;
-    const ip = req.ip;
-    if (!content)
-        return res.send({ success: false, error: 'content is required' });
-    if (content.length > 200)
-        return res.send({ success: false, error: 'content should be under 200' });
-    console.log(content);
-    const question = await prisma.question
-        .create({
-        data: {
-            content,
-            address: ip
-        }
-    })
-        .catch((err) => {
-        console.log(err);
-        throw err;
-    });
-    return {
-        data: question
-    };
-});
-app.post('/anwser', async (req, res) => {
-    const { id, answer } = req.body;
-    const password = req.headers.authorization;
-    if (!id)
-        return res.send({ success: false, error: 'id is required' });
-    if (!answer)
-        return res.send({ success: false, error: 'answer is required' });
-    if (!password)
-        return res.send({ success: false, error: 'password is required' });
-    if (password !== constant_1.PASSWORD)
-        return res.send({ success: false, error: 'password is incorrect' });
-    console.log(answer);
-    const question = await prisma.question
-        .update({
-        where: {
-            id
-        },
-        data: {
-            answer,
-            isAnswered: true
-        }
-    })
-        .catch((err) => {
-        console.log(err);
-        throw err;
-    });
-    return res.send({ data: question });
-});
-exports.asked = functions.https.onRequest((req, res) => {
-    app.ready((err) => {
-        if (err)
-            throw err;
-        handleRequest(req, res);
-    });
-});
+const functions = __importStar(require("firebase-functions"));
+const router_1 = __importDefault(require("./router"));
+const app = new koa_1.default();
+app.use((0, cors_1.default)({
+    origin: '*',
+    credentials: true,
+    keepHeadersOnError: true
+}));
+app.use(router_1.default.routes());
+app.use(router_1.default.allowedMethods());
+exports.asked = functions.https.onRequest(app.callback());
 //# sourceMappingURL=index.js.map
